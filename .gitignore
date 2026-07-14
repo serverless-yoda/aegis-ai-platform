@@ -216,3 +216,9 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# all text files related to phases for the project
+phases/*.txt
+
+# all files in scripts
+scripts/*.*
