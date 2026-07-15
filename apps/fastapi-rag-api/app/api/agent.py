@@ -1,13 +1,10 @@
-from fastapi import APIRouter, Response, Request, status
-import logging
-from app.model import AgentRequest
-
-logger = logging.getLogger("ai-aegis-platform")
+from app.common.imports import *
 
 router = APIRouter()
 
 @router.post("/run")
 async def agent_task_async(body: AgentRequest, response: Response, request: Request):
+    
     client: "AsyncOpenAI" = getattr(request.app.state, "openai_client", None)
 
     settings = getattr(request.app.state, "_settings", None)
@@ -34,6 +31,7 @@ async def agent_task_async(body: AgentRequest, response: Response, request: Requ
             "user_prompt": body.prompt,
             "agent_response": completion.choices[0].message.content,
         }
+    
     except Exception as e:
         logger.error(f"Execution failure calling OpenAI layer: {e}")
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
