@@ -1,9 +1,7 @@
 import os
-import logging
 from pydantic_settings import BaseSettings
 
 logger = logging.getLogger("ai-aegis-platform")
-
 class Settings(BaseSettings):
     model_config = {"protected_namespaces": ()}
 
