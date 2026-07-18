@@ -55,9 +55,9 @@ resource llmModelDeployment 'Microsoft.CognitiveServices/accounts/deployments@20
   }
   properties: {
     model:{
-      name: 'gpt-4.1-mini'
+      name: 'gpt-5-mini'
       format: 'OpenAI'
-      version: '2025-04-14'
+      version: '2025-08-07'
     }
   }
 }
@@ -65,19 +65,19 @@ resource llmModelDeployment 'Microsoft.CognitiveServices/accounts/deployments@20
 /*
   Container Registry deployment to push agent containers to
 */
-resource acr 'Microsoft.ContainerRegistry/registries@2023-07-01' = {
-  name: acrName
-  location: location
-  sku: {
-    name: 'Basic' // Cost-effective option
-  }
-  properties: {
-    // Admin user is needed to push images from local dev environment.
-    adminUserEnabled: true
-  }
-}
+// resource acr 'Microsoft.ContainerRegistry/registries@2023-07-01' = {
+//   name: acrName
+//   location: location
+//   sku: {
+//     name: 'Basic' // Cost-effective option
+//   }
+//   properties: {
+//     // Admin user is needed to push images from local dev environment.
+//     adminUserEnabled: true
+//   }
+// }
 
 output OPENAI_ENDPOINT string = 'https://${aiFoundry.properties.customSubDomainName}.services.ai.azure.com/openai/v1'
 output OPENAI_API_KEY string = listKeys(aiFoundry.id, '2025-06-01').key1
 output LLM_MODEL_DEPLOYMENT_NAME string = llmModelDeployment.name
-output ACR_LOGIN_SERVER string = acr.properties.loginServer
+//output ACR_LOGIN_SERVER string = acr.properties.loginServer
