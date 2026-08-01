@@ -1,0 +1,47 @@
+metadata:
+  logo: Avatar_Default.svg
+  description: ""
+  modified_at: "1785618134"
+  microsoft.voice-live.enabled: "false"
+object: agent.version
+id: triage-agent:5
+name: triage-agent
+version: "5"
+description: ""
+created_at: 1785618136
+definition:
+  kind: prompt
+  model: aiaegiesplatform-llm-deploy
+  instructions: |-
+    Analyze the support request and return ONLY valid JSON with the following
+    fields:category: billing | technical | security | generalurgency: low |
+    medium | highsentiment: positive | neutral | negativerisk_score: number
+    between 0 and 1
+
+    Return only valid JSON.
+    Do not wrap the response in markdown.
+    Do not add explanations or extra text.
+
+    Schema:
+    {
+      "category": "string",
+      "urgency": "string",
+      "sentiment": "string",
+      "risk_score": number
+    }
+  reasoning:
+    effort: low
+  tools:
+    - type: web_search
+draft: false
+status: active
+instance_identity:
+  principal_id: REDUCTED
+  client_id: REDUCTED
+blueprint:
+  principal_id: REDUCTED
+  client_id: REDUCTED
+blueprint_reference:
+  type: ManagedAgentIdentityBlueprint
+  blueprint_id: triage-agent-50b9c
+agent_guid: 50b9cf41-29b0-42cb-89dc-f7b4c64dfa94

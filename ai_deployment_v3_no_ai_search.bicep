@@ -160,7 +160,7 @@ resource llmModelDeployment 'Microsoft.CognitiveServices/accounts/deployments@20
     model: {
       name: 'gpt-5-mini'
       format: 'OpenAI'
-      /*version: '2025-08-07'*/
+      version: '2025-08-07'
     }
   }
 

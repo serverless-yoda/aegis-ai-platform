@@ -1,0 +1,70 @@
+kind: workflow
+trigger:
+  kind: OnConversationStart
+  id: trigger_wf
+  actions:
+    - kind: Question
+      id: node-1785611118247
+      variable: Local.local_text
+      entity: StringPrebuiltEntity
+      skipQuestionMode: SkipOnFirstExecutionIfVariableHasValue
+      prompt: Please describe your support ticket?
+    - kind: InvokeAzureAgent
+      id: node-1785611142706
+      agent:
+        name: triage-agent
+      conversationId: =System.ConversationId
+      input:
+        messages: =Local.local_text
+      output:
+        autoSend: false
+        messages: Local.classification_result
+    - kind: ParseValue
+      id: node-1785612110338
+      variable: Local.parsed_ticket
+      value: =First(Local.classification_result).Text
+      valueType:
+        kind: Record
+        properties:
+          category: String
+          urgency: String
+          sentiment: String
+          risk_score: Number
+    - kind: ConditionGroup
+      conditions:
+        - condition: =Local.parsed_ticket.risk_score >= 0.6
+          actions:
+            - kind: SetVariable
+              id: node-1785620394261
+              variable: Local.triage_status
+              value: ="escalated"
+            - kind: SendActivity
+              activity: |-
+                Thanks — I'm flagging this as
+                a high‑risk request and routing it for human review. You'll receive an
+                update shortly
+                Thank you. Your request has been analyzed
+              id: node-1785620440661
+            - kind: EndConversation
+              id: node-1785620492436
+          id: if-node-1785620256656-563vpm4s
+      id: node-1785620256656
+      elseActions:
+        - kind: SetVariable
+          id: node-1785620583443
+          variable: Local.triage_status
+          value: ="autohandled"
+    - kind: SendActivity
+      id: node-1785614052998
+      activity: |-
+        Got it. I've categorized your request as {Local.parsed_ticket.category} with {Local.parsed_ticket.urgency} urgency.
+
+        Sentiment: {Local.parsed_ticket.sentiment}
+        Risk score: {Local.parsed_ticket.risk_score}
+
+        I'll guide you through the next steps.
+    - kind: EndConversation
+      id: node-1785611563127
+id: support-agent-wf
+name: support-agent
+description: Support ticket categorization workflow
