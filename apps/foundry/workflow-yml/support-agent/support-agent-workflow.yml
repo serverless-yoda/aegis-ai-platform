@@ -9,6 +9,17 @@ trigger:
       entity: StringPrebuiltEntity
       skipQuestionMode: SkipOnFirstExecutionIfVariableHasValue
       prompt: Please describe your support ticket?
+    - kind: ConditionGroup
+      id: validate_input
+      conditions:
+        - id: if_empty_input
+          condition: =IsBlank(Trim(Local.local_text))
+          actions:
+            - kind: SendActivity
+              id: warning_message
+              activity: Please provide a description of your support ticket before continuing.
+            - kind: EndConversation
+              id: end_empty_input
     - kind: InvokeAzureAgent
       id: node-1785611142706
       agent:
@@ -31,24 +42,25 @@ trigger:
           sentiment: String
           risk_score: Number
     - kind: ConditionGroup
+      id: node-1785620256656
       conditions:
-        - condition: =Local.parsed_ticket.risk_score >= 0.6
+        - id: if-node-1785620256656-563vpm4s
+          condition: =Local.parsed_ticket.risk_score >= 0.6
           actions:
             - kind: SetVariable
               id: node-1785620394261
               variable: Local.triage_status
               value: ="escalated"
             - kind: SendActivity
-              activity: |-
-                Thanks — I'm flagging this as
-                a high‑risk request and routing it for human review. You'll receive an
-                update shortly
-                Thank you. Your request has been analyzed
               id: node-1785620440661
+              activity: |-
+                Thanks. I'm flagging this as a high-risk request and routing it for human review.
+
+                You'll receive an update shortly.
+
+                Thank you. Your request has been analyzed.
             - kind: EndConversation
               id: node-1785620492436
-          id: if-node-1785620256656-563vpm4s
-      id: node-1785620256656
       elseActions:
         - kind: SetVariable
           id: node-1785620583443
@@ -60,6 +72,7 @@ trigger:
         Got it. I've categorized your request as {Local.parsed_ticket.category} with {Local.parsed_ticket.urgency} urgency.
 
         Sentiment: {Local.parsed_ticket.sentiment}
+
         Risk score: {Local.parsed_ticket.risk_score}
 
         I'll guide you through the next steps.
